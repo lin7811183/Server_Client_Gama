@@ -1,21 +1,27 @@
 import java.io.*;
 import java.net.*;
 import java.util.StringTokenizer;
+import java.util.concurrent.TimeUnit;
 import java.io.IOException;
 
 public class Server {
 	
-	public static void main (String args[]) {
-			
-		Server.ServertSock();
+	public static void main (String args[]) throws InterruptedException {
+		
+		for(;;) {
+			Server.ServertSock();
+			//TimeUnit.SECONDS.sleep(5);
+		}
 		
 	}
 	
+	//Server Socket 連線
 	public static void ServertSock() {
 		
 		try {
+
 			//Server Socket 連線
-			ServerSocket Server = new ServerSocket(9999);
+			ServerSocket Server = new ServerSocket(9998);
 			System.out.println("Server is created . Waiting for connection...");
 			Socket S1 = Server.accept();
 			System.out.println("Client is connected , IP:"+S1.getInetAddress());
@@ -47,7 +53,7 @@ public class Server {
 			//關閉Socket
 			S1.close();
 			}catch(IOException e) {
-			System.out.println("Error");
+				//System.out.println("Error");
 			}
 		}
 
