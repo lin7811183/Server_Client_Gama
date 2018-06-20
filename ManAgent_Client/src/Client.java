@@ -18,7 +18,7 @@ public class Client {
 	public static void ClientSock() throws IOException {
 		try {
 			//Client ³s½u
-			Socket C1 = new Socket("127.0.0.1",9999);
+			Socket C1 = new Socket("127.0.0.1",9998);
 			
 			//COMPUTERNAME Name
 			String ComName =  System.getenv("COMPUTERNAME");
