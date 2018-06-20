@@ -19,7 +19,7 @@ public class Server {
 	public static void ServertSock() {
 		
 		try {
-
+			for(;;) {
 			//Server Socket ³s½u
 			ServerSocket Server = new ServerSocket(9998);
 			System.out.println("Server is created . Waiting for connection...");
@@ -52,6 +52,7 @@ public class Server {
 			
 			//Ãö³¬Socket
 			S1.close();
+			}
 			}catch(IOException e) {
 				//System.out.println("Error");
 			}
