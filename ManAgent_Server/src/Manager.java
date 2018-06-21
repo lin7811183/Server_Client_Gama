@@ -106,21 +106,19 @@ public class Manager {
 			public void actionPerformed(ActionEvent e) {
 							
 				if(Monitor_Button.isSelected()) {
-					
 					Monitor_Button.setText("Monitor On");
 					Monitor_Button.setSelected(false);
-					Monitor_Button.setBackground(Color.green);
-					//Monitor_Button.setSelected(false);
+					//Monitor_Button.setBackground(Color.green);
 					Image img = new ImageIcon(this.getClass().getResource("/switch-on.png")).getImage();
 					Switch.setIcon(new ImageIcon(img));
 					
-					Server.ServertSock();
+					//Server.ServertSock();
 
 				}
 				else {
 					Monitor_Button.setText("Monitor Off");
 					Monitor_Button.setSelected(true);
-					Monitor_Button.setBackground(Color.red);
+					//Monitor_Button.setBackground(Color.red);
 					Image img = new ImageIcon(this.getClass().getResource("/switch-off.png")).getImage();
 					Switch.setIcon(new ImageIcon(img));
 				}
