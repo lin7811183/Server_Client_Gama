@@ -8,18 +8,15 @@ public class Server {
 	
 	public static void main (String args[]) throws InterruptedException {
 		
-		for(;;) {
 			Server.ServertSock();
 			//TimeUnit.SECONDS.sleep(5);
-		}
-		
+	
 	}
 	
 	//Server Socket 連線
 	public static void ServertSock() {
 		
 		try {
-			for(;;) {
 			//Server Socket 連線
 			ServerSocket Server = new ServerSocket(9998);
 			System.out.println("Server is created . Waiting for connection...");
@@ -41,6 +38,7 @@ public class Server {
 			else {//0:OK , 1:Error
 				DataOutputStream Out = new DataOutputStream(S1.getOutputStream());//Server 輸出字串
 				String Re_Temp = "Server_to_Client,"+Array[0]+","+Array[1]+",1";
+				System.out.println(Re_Temp);
 				Out.writeUTF(Re_Temp);
 			}
 			//String tmp_S = "Server>"+tmp;
@@ -52,7 +50,7 @@ public class Server {
 			
 			//關閉Socket
 			S1.close();
-			}
+
 			}catch(IOException e) {
 				//System.out.println("Error");
 			}
