@@ -219,7 +219,7 @@ public class Manager {
         @Override
         public void run() 
         {	
-        	for(int i = 1;i<=999999999;i++) {
+        	for(;;) {
         		try {
     			
         			//Server Socket 連線
@@ -239,14 +239,14 @@ public class Manager {
         				DataOutputStream Out = new DataOutputStream(S1.getOutputStream());//Server 輸出字串
         				String Re_Temp = "Server_to_Client,"+Array[0]+","+Array[1]+",0";
         				Out.writeUTF(Re_Temp);
-        				System.out.println(i);
+        				System.out.println("Test1");
         			}
         			else {//0:OK , 1:Error
         				DataOutputStream Out = new DataOutputStream(S1.getOutputStream());//Server 輸出字串
         				String Re_Temp = "Server_to_Client,"+Array[0]+","+Array[1]+",1";
         				Monitor_Area.append(Array[0]+",branchcache,Error\n");//產出Monitor字串
         				Out.writeUTF(Re_Temp);
-        				System.out.println(i);
+        				System.out.println("Test2");
         			}
         			//Server接收Serviec重啟訊息
         			DataInputStream DinS2 = new DataInputStream(S1.getInputStream());
@@ -256,7 +256,7 @@ public class Manager {
     				
         			//關閉Socket
         			S1.close();
-    				System.out.println(i);
+    				System.out.println("Test3");
     				}catch(IOException e) {
     				//System.out.println("Error");
     				}
