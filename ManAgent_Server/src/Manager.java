@@ -17,6 +17,7 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.awt.event.ActionEvent;
 import javax.swing.JLabel;
 import javax.swing.LayoutStyle.ComponentPlacement;
@@ -40,6 +41,8 @@ public class Manager {
 	private JFrame frmTt;
 	private JTextArea Monitor_Area;
     private JButton Monitor_Button;
+    private AtomicBoolean running = new AtomicBoolean(false);
+    
 	/**
 	 * Create the application.
 	 */
@@ -120,8 +123,7 @@ public class Manager {
 					//Monitor_Button.setBackground(Color.red);
 					Image img = new ImageIcon(this.getClass().getResource("/switch-off.png")).getImage();
 					Switch.setIcon(new ImageIcon(img));
-					//Monitor_Button_ActionPerformedC(e);
-					Monitor_Area.append("Monitor已關閉!!!.\n");
+					Monitor_Button_ActionPerformedC(e);
 				}
 			}
 		});
@@ -186,7 +188,9 @@ public class Manager {
     private void Monitor_Button_ActionPerformedC(ActionEvent evt) {//GEN-FIRST:event_Monitor_Button_ActionPerformed
         Thread closer = new Thread(new ServerColse());
         closer.start(); 
+        closer.interrupt();  
         Monitor_Area.append("Monitor已關閉!!!\n");
+
     }//GEN-LAST:event_Monitor_Button_ActionPerforme
 
 	private void add(JTextArea monitor_Area) {
@@ -215,27 +219,30 @@ public class Manager {
 	
 	//Server Socket 開啟連線 Class
     public class ServerStart implements Runnable 
-    {
+    { 	
         @Override
         public void run() 
         {	
-        	
+        	System.out.print(Monitor_Button.isSelected());
         		try {
         			//Server Socket 連線
-        			System.out.println("Test4");
+        			//System.out.println("Test4");
         			ServerSocket Server = new ServerSocket(9998);
         			loop:
+        		
+        		while (!Monitor_Button.isSelected()) {
         			
-        		for(;;) {
-        			
-        			System.out.println("Server is created . Waiting for connection...");
+        			System.out.print(Monitor_Button.isSelected());
+        			System.out.println("Server is Waiting for connection...");
         			Socket S1 = Server.accept();
         			System.out.println("Client is connected , IP:"+S1.getInetAddress());
-    			
+        			
         			//Server 接收Client訊息(串流)
         			DataInputStream DinS = new DataInputStream(S1.getInputStream());
         			String tmp = new String(DinS.readUTF());//輸入串流轉換為物件
-    			
+        			
+        			
+        			
         			String Array[] = new String[2];//字串分割與判斷Service Ok or Error
         			Array = tmp.split(",");//字串分割與判斷Service Ok or Error
         			int CK = Integer.parseInt(Array[2]);
@@ -243,7 +250,7 @@ public class Manager {
         				DataOutputStream Out = new DataOutputStream(S1.getOutputStream());//Server 輸出字串
         				String Re_Temp = "Server_to_Client,"+Array[0]+","+Array[1]+",0";
         				Out.writeUTF(Re_Temp);
-        				System.out.println("Test0");
+        				System.out.print(Monitor_Button.isSelected());
         				continue loop;
         			}
         			else if(CK == 1)  {//0:OK , 1:Error
@@ -251,11 +258,11 @@ public class Manager {
         				String Re_Temp = "Server_to_Client,"+Array[0]+","+Array[1]+",1";
         				Monitor_Area.append(Array[0]+",branchcache,Error\n");//產出Monitor字串
         				Out.writeUTF(Re_Temp);
-        				System.out.println("Test1");
+        				//System.out.println("Test1");
         				DataOutputStream Out2 = new DataOutputStream(S1.getOutputStream());//Server 輸出字串
         				String Re_Temp2 = "Server_to_Client,"+Array[0]+","+Array[1]+",3";
         				Monitor_Area.append(Array[0]+",branchcache,Restart_OK\n");//產出Monitor字串
-        				System.out.println("Test2");
+        				System.out.print(Monitor_Button.isSelected());
         				continue loop;
         			}
   	   			  				
@@ -276,16 +283,12 @@ public class Manager {
         @Override
         public void run() 
         {	
-        		try { 			
-        			//Server Socket 連線
-        			ServerSocket Server = new ServerSocket(9998);
-        			System.out.println("Server Monitor Port Close");
-        			Socket S1 = Server.accept();
-        			//關閉Socket
-        			S1.close(); 			
-    				}catch(IOException e) {
-    				//System.out.println("Error");
-    				}
+        	try { 
+                Thread.sleep(10); 
+            } 
+            catch(InterruptedException e) { 
+                System.out.println("Stop Socket...."); 
+            } 
         }
     }
 	
