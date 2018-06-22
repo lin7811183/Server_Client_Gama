@@ -11,7 +11,7 @@ public class Client {
 		//Client.ServiceCheck();
 		for(;;) {
 		Client.ClientSock();
-		TimeUnit.SECONDS.sleep(10);
+		TimeUnit.SECONDS.sleep(1);
 		}
 	}
 	
@@ -19,7 +19,11 @@ public class Client {
 	public static void ClientSock() throws IOException {
 		try {
 			//Client 連線
-			Socket C1 = new Socket("127.0.0.1",9998);
+			Socket C1 = new Socket();
+			
+			C1.connect(new InetSocketAddress("127.0.0.1",9998),0);
+			// This stops the request from dragging on after connection succeeds.
+			//C1.setSoTimeout(10);
 			
 			//COMPUTERNAME Name
 			String ComName =  System.getenv("COMPUTERNAME");
@@ -30,7 +34,7 @@ public class Client {
 				BufferedReader In = new BufferedReader (new InputStreamReader(System.in));
 				DataOutputStream Out = new DataOutputStream(C1.getOutputStream());
 				Out.writeUTF(ServiceLine);//"Client :Test tmp";//傳送字串
-				
+				//C1.close();
 			}
 			else {//0:OK , 1:Error
 				String ServiceLine = ComName+","+Client.ServiceCheck()+","+"1";
@@ -39,6 +43,7 @@ public class Client {
 				BufferedReader In = new BufferedReader (new InputStreamReader(System.in));
 				DataOutputStream Out = new DataOutputStream(C1.getOutputStream());
 				Out.writeUTF(ServiceLine);//"Client :Test tmp";//傳送字串
+				//C1.close();
 			}
 			/*
 			//建立字串
@@ -76,7 +81,7 @@ public class Client {
 			//關閉Socket
 			C1.close();
 			}catch(IOException e) {
-			System.out.println("Error");
+			System.out.println("Connect Error....");
 			}
 		
 	}
