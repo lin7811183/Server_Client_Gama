@@ -9,9 +9,10 @@ public class Client {
 		
 
 		//Client.ServiceCheck();
+		for(;;) {
 		Client.ClientSock();
-		//TimeUnit.SECONDS.sleep(30);
-		
+		TimeUnit.SECONDS.sleep(10);
+		}
 	}
 	
 	//Client Socket 連線
@@ -63,7 +64,12 @@ public class Client {
 				Process PS = Runtime.getRuntime().exec(CMD);
 				// Getting the results
 				PS.getOutputStream().close();
-				System.out.println(Array[1]+" service:branchcache restart is finish.");
+				//建立字串 
+				String ServiceLine = ComName+",service:branchcache,"+"2";
+				BufferedReader In = new BufferedReader (new InputStreamReader(System.in));
+				DataOutputStream Out = new DataOutputStream(C1.getOutputStream());
+				Out.writeUTF(ServiceLine);//"Client :Test tmp";//傳送字串
+				System.out.println(ServiceLine);
 			}
 			
 			

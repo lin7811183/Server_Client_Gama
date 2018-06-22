@@ -179,14 +179,14 @@ public class Manager {
 	
     private void Monitor_Button_ActionPerformedS(ActionEvent evt) {//GEN-FIRST:event_Monitor_Button_ActionPerformed
         Thread starter = new Thread(new ServerStart());
-        starter.start();  
-        Monitor_Area.append("Monitor已開啟!!!.\n");
+        starter.start();     
+        Monitor_Area.append("Monitor已開啟!!!\n");
     }//GEN-LAST:event_Monitor_Button_ActionPerforme
     
     private void Monitor_Button_ActionPerformedC(ActionEvent evt) {//GEN-FIRST:event_Monitor_Button_ActionPerformed
         Thread closer = new Thread(new ServerColse());
         closer.start(); 
-        Monitor_Area.append("Monitor已關閉!!!.\n");
+        Monitor_Area.append("Monitor已關閉!!!\n");
     }//GEN-LAST:event_Monitor_Button_ActionPerforme
 
 	private void add(JTextArea monitor_Area) {
@@ -219,11 +219,15 @@ public class Manager {
         @Override
         public void run() 
         {	
-        	for(;;) {
+        	
         		try {
-    			
         			//Server Socket 連線
+        			System.out.println("Test4");
         			ServerSocket Server = new ServerSocket(9998);
+        			loop:
+        			
+        		for(;;) {
+        			
         			System.out.println("Server is created . Waiting for connection...");
         			Socket S1 = Server.accept();
         			System.out.println("Client is connected , IP:"+S1.getInetAddress());
@@ -239,29 +243,31 @@ public class Manager {
         				DataOutputStream Out = new DataOutputStream(S1.getOutputStream());//Server 輸出字串
         				String Re_Temp = "Server_to_Client,"+Array[0]+","+Array[1]+",0";
         				Out.writeUTF(Re_Temp);
-        				System.out.println("Test1");
+        				System.out.println("Test0");
+        				continue loop;
         			}
-        			else {//0:OK , 1:Error
+        			else if(CK == 1)  {//0:OK , 1:Error
         				DataOutputStream Out = new DataOutputStream(S1.getOutputStream());//Server 輸出字串
         				String Re_Temp = "Server_to_Client,"+Array[0]+","+Array[1]+",1";
         				Monitor_Area.append(Array[0]+",branchcache,Error\n");//產出Monitor字串
         				Out.writeUTF(Re_Temp);
+        				System.out.println("Test1");
+        				DataOutputStream Out2 = new DataOutputStream(S1.getOutputStream());//Server 輸出字串
+        				String Re_Temp2 = "Server_to_Client,"+Array[0]+","+Array[1]+",3";
+        				Monitor_Area.append(Array[0]+",branchcache,Restart_OK\n");//產出Monitor字串
         				System.out.println("Test2");
+        				continue loop;
         			}
-        			//Server接收Serviec重啟訊息
-        			DataInputStream DinS2 = new DataInputStream(S1.getInputStream());
-        			String tmp2 = new String(DinS2.readUTF());//輸入串流轉換為物件
-    				Monitor_Area.append(tmp2);//產出Monitor字串
-    	   			
-    				
+  	   			  				
         			//關閉Socket
         			S1.close();
-    				System.out.println("Test3");
+    				System.out.println("close");
+        		}
     				}catch(IOException e) {
     				//System.out.println("Error");
     				}
         		}
-        }
+        
     }
     
     //Server Socket 關閉連線 Class
