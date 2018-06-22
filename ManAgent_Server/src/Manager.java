@@ -17,6 +17,8 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.awt.event.ActionEvent;
 import javax.swing.JLabel;
@@ -223,59 +225,57 @@ public class Manager {
         @Override
         public void run() 
         {	
-        	System.out.print(Monitor_Button.isSelected());
+			//Get System Time
+			SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         		try {
         			//Server Socket 連線
-        			//System.out.println("Test4");
         			ServerSocket Server = new ServerSocket(9998);
-        			loop:
-        		
-        		while (!Monitor_Button.isSelected()) {
-        			
-        			System.out.print(Monitor_Button.isSelected());
-        			System.out.println("Server is Waiting for connection...");
-        			Socket S1 = Server.accept();
-        			System.out.println("Client is connected , IP:"+S1.getInetAddress());
-        			
-        			//Server 接收Client訊息(串流)
-        			DataInputStream DinS = new DataInputStream(S1.getInputStream());
-        			String tmp = new String(DinS.readUTF());//輸入串流轉換為物件
         			
         			
-        			
-        			String Array[] = new String[2];//字串分割與判斷Service Ok or Error
-        			Array = tmp.split(",");//字串分割與判斷Service Ok or Error
-        			int CK = Integer.parseInt(Array[2]);
-        			if(CK == 0) {//0:OK , 1:Error
-        				DataOutputStream Out = new DataOutputStream(S1.getOutputStream());//Server 輸出字串
-        				String Re_Temp = "Server_to_Client,"+Array[0]+","+Array[1]+",0";
-        				Out.writeUTF(Re_Temp);
-        				System.out.print(Monitor_Button.isSelected());
-        				continue loop;
-        			}
-        			else if(CK == 1)  {//0:OK , 1:Error
-        				DataOutputStream Out = new DataOutputStream(S1.getOutputStream());//Server 輸出字串
-        				String Re_Temp = "Server_to_Client,"+Array[0]+","+Array[1]+",1";
-        				Monitor_Area.append(Array[0]+",branchcache,Error\n");//產出Monitor字串
-        				Out.writeUTF(Re_Temp);
-        				//System.out.println("Test1");
-        				DataOutputStream Out2 = new DataOutputStream(S1.getOutputStream());//Server 輸出字串
-        				String Re_Temp2 = "Server_to_Client,"+Array[0]+","+Array[1]+",3";
-        				Monitor_Area.append(Array[0]+",branchcache,Restart_OK\n");//產出Monitor字串
-        				System.out.print(Monitor_Button.isSelected());
-        				continue loop;
-        			}
+        			loop:  		
+        			while (!Monitor_Button.isSelected()) {
+        				Monitor_Area.append("Moniotr is Waiting for connection....\n");
+        				Socket S1 = Server.accept();
+        				System.out.println("Client is connected , IP:"+S1.getInetAddress());
+        				
+        				//Server 接收Client訊息(串流)
+        				DataInputStream DinS = new DataInputStream(S1.getInputStream());
+        				String tmp = new String(DinS.readUTF());//輸入串流轉換為物件
+
+        				String Array[] = new String[2];//字串分割與判斷Service Ok or Error
+        				Array = tmp.split(",");//字串分割與判斷Service Ok or Error
+        				int CK = Integer.parseInt(Array[2]);
+        				
+        				if(CK == 0) {//0:OK , 1:Error
+        					DataOutputStream Out = new DataOutputStream(S1.getOutputStream());//Server 輸出字串
+        					String Re_Temp = "Server,"+Array[0]+","+Array[1]+",0";
+        					Out.writeUTF(Re_Temp);
+        					//關閉Socket
+            				S1.close();
+        					continue loop;
+        				}
+        				else if(CK == 1)  {//0:OK , 1:Error
+        					DataOutputStream Out = new DataOutputStream(S1.getOutputStream());//Server 輸出字串
+        					String Re_Temp = "Server_to_Client,"+Array[0]+","+Array[1]+",1";
+        					Monitor_Area.append(df.format(new Date())+","+Array[0]+",branchcache,Crash\n");//產出Monitor字串
+        					Out.writeUTF(Re_Temp);
+        					//System.out.println("Test1");
+        					DataOutputStream Out2 = new DataOutputStream(S1.getOutputStream());//Server 輸出字串
+        					String Re_Temp2 = "Server,"+Array[0]+","+Array[1]+",3";
+        					Monitor_Area.append(df.format(new Date())+Array[0]+","+",branchcache,Restart_OK\n");//產出Monitor字串
+        					//關閉Socket
+            				S1.close();
+        					continue loop;
+        				}
   	   			  				
-        			//關閉Socket
-        			S1.close();
-    				System.out.println("close");
-        		}
-    				}catch(IOException e) {
-    				//System.out.println("Error");
-    				}
-        		}
-        
-    }
+        				//關閉Socket
+        				S1.close();
+        			}
+        		}catch(IOException e) {
+        			//System.out.println("Error");
+    			}
+        	}
+        }
     
     //Server Socket 關閉連線 Class
     public class ServerColse implements Runnable 
@@ -284,7 +284,7 @@ public class Manager {
         public void run() 
         {	
         	try { 
-                Thread.sleep(10); 
+                Thread.sleep(999);
             } 
             catch(InterruptedException e) { 
                 System.out.println("Stop Socket...."); 
