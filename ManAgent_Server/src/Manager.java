@@ -38,6 +38,8 @@ import javax.swing.JScrollPane;
 public class Manager {
 
 	private JFrame frmTt;
+	private JTextArea Monitor_Area;
+    private JButton Monitor_Button;
 	/**
 	 * Create the application.
 	 */
@@ -99,7 +101,7 @@ public class Manager {
 		JLabel Switch = new JLabel();
 		
 		//Monitor_Button
-		JButton Monitor_Button = new JButton("Monitor GO");
+		Monitor_Button = new JButton("Monitor GO");
 		Monitor_Button.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 	
@@ -109,7 +111,8 @@ public class Manager {
 					//Monitor_Button.setBackground(Color.green);
 					Image img = new ImageIcon(this.getClass().getResource("/switch-on.png")).getImage();
 					Switch.setIcon(new ImageIcon(img));	
-					
+					//Monitor_Area.append("On\n");	
+					Monitor_Button_ActionPerformedS(e);
 				}
 				else {
 					Monitor_Button.setText("Monitor Off");
@@ -117,6 +120,8 @@ public class Manager {
 					//Monitor_Button.setBackground(Color.red);
 					Image img = new ImageIcon(this.getClass().getResource("/switch-off.png")).getImage();
 					Switch.setIcon(new ImageIcon(img));
+					//Monitor_Button_ActionPerformedC(e);
+					Monitor_Area.append("Monitor已關閉!!!.\n");
 				}
 			}
 		});
@@ -142,26 +147,24 @@ public class Manager {
 						.addGroup(gl_Monitor.createSequentialGroup()
 							.addGap(56)
 							.addComponent(Switch, GroupLayout.PREFERRED_SIZE, 70, GroupLayout.PREFERRED_SIZE))
-						.addGroup(gl_Monitor.createSequentialGroup()
-							.addPreferredGap(ComponentPlacement.UNRELATED)
-							.addComponent(Monitor_Button, GroupLayout.DEFAULT_SIZE, 172, Short.MAX_VALUE)))
+						.addComponent(Monitor_Button, GroupLayout.DEFAULT_SIZE, 184, Short.MAX_VALUE))
 					.addContainerGap())
 		);
 		gl_Monitor.setVerticalGroup(
 			gl_Monitor.createParallelGroup(Alignment.LEADING)
 				.addGroup(gl_Monitor.createSequentialGroup()
-					.addContainerGap(GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+					.addContainerGap(13, Short.MAX_VALUE)
 					.addGroup(gl_Monitor.createParallelGroup(Alignment.LEADING)
 						.addComponent(Switch, GroupLayout.PREFERRED_SIZE, 31, GroupLayout.PREFERRED_SIZE)
 						.addComponent(lblNewLabel))
 					.addPreferredGap(ComponentPlacement.RELATED)
 					.addGroup(gl_Monitor.createParallelGroup(Alignment.LEADING)
 						.addComponent(Monitor_Button)
-						.addComponent(scrollPane, GroupLayout.PREFERRED_SIZE, 457, GroupLayout.PREFERRED_SIZE))
-					.addContainerGap(18, Short.MAX_VALUE))
+						.addComponent(scrollPane, GroupLayout.PREFERRED_SIZE, 468, GroupLayout.PREFERRED_SIZE))
+					.addContainerGap(GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
 		);
 		//------------------------------------------------------------------------------------------------------
-		JTextArea Monitor_Area = new JTextArea("Monitor訊息:",5,5);
+		Monitor_Area = new JTextArea("Monitor訊息:\n",5,5);
 		Monitor_Area.setLineWrap(true);//自動換行
 		scrollPane.setViewportView(Monitor_Area);
 		Monitor_Area.setLineWrap(true);//自動換行
@@ -169,102 +172,27 @@ public class Manager {
 		Monitor_Area.setBounds(10,10,200,60);
 		Monitor_Area.setBounds(10,10,200,60);
 		Monitor.setLayout(gl_Monitor);
-		Monitor_Area.append(Monitor_Button.getText());
+		//Monitor_Area.append(Monitor_Button.getText());
 		frmTt.getContentPane().setLayout(groupLayout);
 		
-
-		/*
-		loop:
-		while(Monitor_Button.isSelected()) {
-			System.out.println(Monitor_Button.getText());
-				try {
-					System.out.println(Monitor_Button.isSelected());
-					//Server Socket 連線
-					ServerSocket Server = new ServerSocket(9998);
-					System.out.println("Server is created . Waiting for connection...");
-					Socket S1 = Server.accept();
-					System.out.println("Client is connected , IP:"+S1.getInetAddress());
-				
-					//Server 接收Client訊息(串流)
-					DataInputStream DinS = new DataInputStream(S1.getInputStream());
-					String tmp = new String(DinS.readUTF());//輸入串流轉換為物件
-					
-					String Array[] = new String[2];//字串分割與判斷Service Ok or Error
-					Array = tmp.split(",");//字串分割與判斷Service Ok or Error
-					int CK = Integer.parseInt(Array[2]);
-					
-					if(CK == 0) {//0:OK , 1:Error
-						DataOutputStream Out = new DataOutputStream(S1.getOutputStream());//Server 輸出字串
-						String Re_Temp = "Server_to_Client,"+Array[0]+","+Array[1]+",0";
-						Out.writeUTF(Re_Temp);
-					}
-					else {//0:OK , 1:Error
-						DataOutputStream Out = new DataOutputStream(S1.getOutputStream());//Server 輸出字串
-						String Re_Temp = "Server_to_Client,"+Array[0]+","+Array[1]+",1";
-						Monitor_Area.setText(Monitor_Area.getText().trim()+"\n"+Re_Temp);
-						Out.writeUTF(Re_Temp);
-					}
-					//關閉Socket
-					S1.close();
-				}catch(IOException e) {
-					//System.out.println("Error");
-				}	
-				break loop;
-			}
-			*/
-		
 		}
-
-		
-
 	
+    private void Monitor_Button_ActionPerformedS(ActionEvent evt) {//GEN-FIRST:event_Monitor_Button_ActionPerformed
+        Thread starter = new Thread(new ServerStart());
+        starter.start();  
+        Monitor_Area.append("Monitor已開啟!!!.\n");
+    }//GEN-LAST:event_Monitor_Button_ActionPerforme
+    
+    private void Monitor_Button_ActionPerformedC(ActionEvent evt) {//GEN-FIRST:event_Monitor_Button_ActionPerformed
+        Thread closer = new Thread(new ServerColse());
+        closer.start(); 
+        Monitor_Area.append("Monitor已關閉!!!.\n");
+    }//GEN-LAST:event_Monitor_Button_ActionPerforme
+
 	private void add(JTextArea monitor_Area) {
 		// TODO Auto-generated method stub
 		
 	}
-	
-	//Server Socket 連線
-	public static void ServertSock() {
-
-		try {
-			
-			//Server Socket 連線
-			ServerSocket Server = new ServerSocket(9998);
-			System.out.println("Server is created . Waiting for connection...");
-			Socket S1 = Server.accept();
-			System.out.println("Client is connected , IP:"+S1.getInetAddress());
-			
-			//Server 接收Client訊息(串流)
-			DataInputStream DinS = new DataInputStream(S1.getInputStream());
-			String tmp = new String(DinS.readUTF());//輸入串流轉換為物件
-			
-			String Array[] = new String[2];//字串分割與判斷Service Ok or Error
-			Array = tmp.split(",");//字串分割與判斷Service Ok or Error
-			int CK = Integer.parseInt(Array[2]);
-			if(CK == 0) {//0:OK , 1:Error
-				DataOutputStream Out = new DataOutputStream(S1.getOutputStream());//Server 輸出字串
-				String Re_Temp = "Server_to_Client,"+Array[0]+","+Array[1]+",0";
-				Out.writeUTF(Re_Temp);
-			}
-			else {//0:OK , 1:Error
-				DataOutputStream Out = new DataOutputStream(S1.getOutputStream());//Server 輸出字串
-				String Re_Temp = "Server_to_Client,"+Array[0]+","+Array[1]+",1";
-				Out.writeUTF(Re_Temp);
-			}
-			//String tmp_S = "Server>"+tmp;
-			//System.out.println(tmp_S);
-						
-			//傳送字串
-			//String Re_Temp = "Server :Test tmp";
-			//Out.writeUTF(Re_Temp);
-			
-			//關閉Socket
-			S1.close();
-			
-			}catch(IOException e) {
-				//System.out.println("Error");
-			}
-		}
 	
 
 	/**
@@ -284,6 +212,76 @@ public class Manager {
 		});
 		
 	}
+	
+	//Server Socket 開啟連線 Class
+    public class ServerStart implements Runnable 
+    {
+        @Override
+        public void run() 
+        {	
+        	for(int i = 1;i<=999999999;i++) {
+        		try {
+    			
+        			//Server Socket 連線
+        			ServerSocket Server = new ServerSocket(9998);
+        			System.out.println("Server is created . Waiting for connection...");
+        			Socket S1 = Server.accept();
+        			System.out.println("Client is connected , IP:"+S1.getInetAddress());
+    			
+        			//Server 接收Client訊息(串流)
+        			DataInputStream DinS = new DataInputStream(S1.getInputStream());
+        			String tmp = new String(DinS.readUTF());//輸入串流轉換為物件
+    			
+        			String Array[] = new String[2];//字串分割與判斷Service Ok or Error
+        			Array = tmp.split(",");//字串分割與判斷Service Ok or Error
+        			int CK = Integer.parseInt(Array[2]);
+        			if(CK == 0) {//0:OK , 1:Error
+        				DataOutputStream Out = new DataOutputStream(S1.getOutputStream());//Server 輸出字串
+        				String Re_Temp = "Server_to_Client,"+Array[0]+","+Array[1]+",0";
+        				Out.writeUTF(Re_Temp);
+        				System.out.println(i);
+        			}
+        			else {//0:OK , 1:Error
+        				DataOutputStream Out = new DataOutputStream(S1.getOutputStream());//Server 輸出字串
+        				String Re_Temp = "Server_to_Client,"+Array[0]+","+Array[1]+",1";
+        				Monitor_Area.append(Array[0]+",branchcache,Error\n");//產出Monitor字串
+        				Out.writeUTF(Re_Temp);
+        				System.out.println(i);
+        			}
+        			//Server接收Serviec重啟訊息
+        			DataInputStream DinS2 = new DataInputStream(S1.getInputStream());
+        			String tmp2 = new String(DinS2.readUTF());//輸入串流轉換為物件
+    				Monitor_Area.append(tmp2);//產出Monitor字串
+    	   			
+    				
+        			//關閉Socket
+        			S1.close();
+    				System.out.println(i);
+    				}catch(IOException e) {
+    				//System.out.println("Error");
+    				}
+        		}
+        }
+    }
+    
+    //Server Socket 關閉連線 Class
+    public class ServerColse implements Runnable 
+    {
+        @Override
+        public void run() 
+        {	
+        		try { 			
+        			//Server Socket 連線
+        			ServerSocket Server = new ServerSocket(9998);
+        			System.out.println("Server Monitor Port Close");
+        			Socket S1 = Server.accept();
+        			//關閉Socket
+        			S1.close(); 			
+    				}catch(IOException e) {
+    				//System.out.println("Error");
+    				}
+        }
+    }
 	
 }
 
