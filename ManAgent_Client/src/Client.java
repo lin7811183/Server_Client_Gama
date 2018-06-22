@@ -56,7 +56,7 @@ public class Client {
 			Array = Re_tmp.split(",");//¦r¦ê¤À³Î»P§PÂ_Service Ok or Error		
 			int CK = Integer.parseInt(Array[3]);
 			if(CK == 0) {//
-				System.out.println("This Host Service is OK.");
+				//System.out.println("This Host Service is OK.");
 			}
 			else {
 				String CMD = "cmd /c net start branchcache";
