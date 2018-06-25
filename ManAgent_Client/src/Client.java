@@ -7,12 +7,12 @@ public class Client {
 	
 	public static void main(String args[]) throws IOException, InterruptedException	{
 		
-
-		//Client.ServiceCheck();
-		for(;;) {
 		Client.ClientSock();
-		TimeUnit.SECONDS.sleep(10);
-		}
+		//Client.ServiceCheck();
+		//for(;;) {
+		//Client.ClientSock();
+		//TimeUnit.SECONDS.sleep(1);
+		//}
 	}
 	
 	//Client Socket 連線
@@ -21,7 +21,7 @@ public class Client {
 			//Client 連線
 			Socket C1 = new Socket();
 			
-			C1.connect(new InetSocketAddress("127.0.0.1",9998),0);
+			C1.connect(new InetSocketAddress("127.0.0.1",9998),1);
 			// This stops the request from dragging on after connection succeeds.
 			//C1.setSoTimeout(10);
 			
