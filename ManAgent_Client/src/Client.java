@@ -11,7 +11,7 @@ public class Client {
 		//Client.ServiceCheck();
 		for(;;) {
 		Client.ClientSock();
-		TimeUnit.SECONDS.sleep(1);
+		TimeUnit.SECONDS.sleep(10);
 		}
 	}
 	
