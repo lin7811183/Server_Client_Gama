@@ -3,6 +3,7 @@ import java.awt.EventQueue;
 import java.awt.Image;
 
 import javax.swing.JFrame;
+import javax.net.SocketFactory;
 import javax.swing.GroupLayout;
 import javax.swing.GroupLayout.Alignment;
 import javax.swing.ImageIcon;
@@ -15,8 +16,10 @@ import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.net.InetSocketAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.net.SocketAddress;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -283,11 +286,11 @@ public class Manager {
         		try {
         			//Server Socket ³s½u
         			ServerSocket Server = new ServerSocket(9998);
-        			
+
         			
         			loop:  		
         			while (!Monitor_Button.isSelected()) {
-        				Monitor_Area.append("Moniotr is Waiting for connection....\n");
+        				Monitor_Area.append("Moniotr is listenning....\n");
         				Socket S1 = Server.accept();
         				System.out.println("Client is connected , IP:"+S1.getInetAddress());
         				
