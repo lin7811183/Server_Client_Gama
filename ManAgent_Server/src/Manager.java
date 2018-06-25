@@ -37,6 +37,8 @@ import javax.swing.JList;
 import javax.swing.JComboBox;
 import javax.swing.JScrollBar;
 import javax.swing.JScrollPane;
+import javax.swing.JTable;
+import java.sql.*;
 
 public class Manager {
 
@@ -44,6 +46,11 @@ public class Manager {
 	private JTextArea Monitor_Area;
     private JButton Monitor_Button;
     private AtomicBoolean running = new AtomicBoolean(false);
+    private JTable Manage_table;
+    private Connection Con;
+    private Statement ST;
+    private Statement SQLStatement;
+    private ResultSet RS;
     
 	/**
 	 * Create the application.
@@ -87,15 +94,60 @@ public class Manager {
 		Manager.setBounds(100, 100, 725, 611);
 		
 		tabbedPane.addTab("Manager", null, Manager, null);
+		
+		JScrollPane scrollPane_1 = new JScrollPane();
+		
+		//Show Table Button
+		JButton ShowButton = new JButton("Show All Host");
+		ShowButton.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				
+				final String fileName = "D:/Test/Test_Manage.mdb";
+				try {
+					//載入JDBC Driver 
+					Class.forName("sun.jdbc.odbc.JdbcOdbcDriver");
+					//連結 ODBC 設定
+					//String URL = "jdbc:odbc:Driver={Microthreadsoft Access Driver (*.mdb, *.accdb)};DBQ="+fileName;
+					//System.out.println(URL);
+					//Con = DriverManager.getConnection(URL,"","");
+					//ST = Con.createStatement();
+					// 其後由此 Statement 物件執行 SQL 指令時，回傳的會是可捲動且唯讀的 ResultSet 物件
+					//SQLStatement = Con.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE,ResultSet.CONCUR_READ_ONLY );
+					//String query = "Select * From Manage_Host";
+					//RS = ST.executeQuery(query);
+				}catch(Exception x) {
+					System.out.println("MS AccessDB Connet Error....");
+				}
+				
+			}
+		});
+		
+		
+		
+		ShowButton.setFont(new Font("微軟正黑體", Font.BOLD, 14));
 		GroupLayout gl_Manager = new GroupLayout(Manager);
 		gl_Manager.setHorizontalGroup(
 			gl_Manager.createParallelGroup(Alignment.LEADING)
-				.addGap(0, 694, Short.MAX_VALUE)
+				.addGroup(gl_Manager.createSequentialGroup()
+					.addContainerGap()
+					.addGroup(gl_Manager.createParallelGroup(Alignment.LEADING)
+						.addComponent(ShowButton, GroupLayout.PREFERRED_SIZE, 135, GroupLayout.PREFERRED_SIZE)
+						.addComponent(scrollPane_1, GroupLayout.DEFAULT_SIZE, 674, Short.MAX_VALUE))
+					.addContainerGap())
 		);
 		gl_Manager.setVerticalGroup(
 			gl_Manager.createParallelGroup(Alignment.LEADING)
-				.addGap(0, 496, Short.MAX_VALUE)
+				.addGroup(gl_Manager.createSequentialGroup()
+					.addContainerGap()
+					.addComponent(scrollPane_1, GroupLayout.PREFERRED_SIZE, 288, GroupLayout.PREFERRED_SIZE)
+					.addGap(18)
+					.addComponent(ShowButton)
+					.addContainerGap(183, Short.MAX_VALUE))
 		);
+		
+		Manage_table = new JTable();
+		Manage_table.setFont(new Font("微軟正黑體", Font.BOLD, 13));
+		scrollPane_1.setViewportView(Manage_table);
 		Manager.setLayout(gl_Manager);
 		
 		JPanel Monitor = new JPanel();
@@ -185,6 +237,7 @@ public class Manager {
         Thread starter = new Thread(new ServerStart());
         starter.start();     
         Monitor_Area.append("Monitor已開啟!!!\n");
+        starter.interrupt();
     }//GEN-LAST:event_Monitor_Button_ActionPerforme
     
     private void Monitor_Button_ActionPerformedC(ActionEvent evt) {//GEN-FIRST:event_Monitor_Button_ActionPerformed
@@ -284,14 +337,16 @@ public class Manager {
         public void run() 
         {	
         	try { 
-                Thread.sleep(999);
+                Thread.sleep(10);
             } 
             catch(InterruptedException e) { 
                 System.out.println("Stop Socket...."); 
             } 
         }
     }
-	
+    
+    
+    
 }
 
 
