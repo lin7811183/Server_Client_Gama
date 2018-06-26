@@ -15,13 +15,14 @@ public class Server {
 	
 	//Server Socket 連線
 	public static void ServertSock() {
-		
+		//把Socket連線做成事件
 		try {
 			//Server Socket 連線
 			ServerSocket Server = new ServerSocket(9998);
 			System.out.println("Server is created . Waiting for connection...");
 			Socket S1 = Server.accept();
 			System.out.println("Client is connected , IP:"+S1.getInetAddress());
+			System.out.println(S1.getChannel());
 			
 			//Server 接收Client訊息(串流)
 			DataInputStream DinS = new DataInputStream(S1.getInputStream());

@@ -27,6 +27,7 @@ import java.awt.event.ActionEvent;
 import javax.swing.JLabel;
 import javax.swing.LayoutStyle.ComponentPlacement;
 import javax.swing.Popup;
+import javax.swing.table.DefaultTableModel;
 
 import java.awt.Font;
 import javax.swing.JTabbedPane;
@@ -42,18 +43,19 @@ import javax.swing.JScrollBar;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import java.sql.*;
+import java.sql.ResultSet;
+import java.sql.ResultSetMetaData;
+import java.sql.SQLException;
 
 public class Manager {
 
 	private JFrame frmTt;
-	private JTextArea Monitor_Area;
-    private JButton Monitor_Button;
     private AtomicBoolean running = new AtomicBoolean(false);
     private JTable Manage_table;
-    private Connection Con;
-    private Statement ST;
-    private Statement SQLStatement;
-    private ResultSet RS;
+    private JTextArea Monitor_Area;
+    private JButton Monitor_button;
+    
+
     
 	/**
 	 * Create the application.
@@ -69,7 +71,7 @@ public class Manager {
 		frmTt = new JFrame();
 		frmTt.setTitle("Manager");
 		frmTt.setResizable(false);
-		frmTt.setBounds(100, 100, 725, 611);
+		frmTt.setBounds(100, 100, 742, 639);
 		frmTt.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
 		
@@ -104,38 +106,69 @@ public class Manager {
 		JButton ShowButton = new JButton("Show All Host");
 		ShowButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				
-				final String fileName = "D:/Test/Test_Manage.mdb";
 				try {
 					//載入JDBC Driver 
-					Class.forName("sun.jdbc.odbc.JdbcOdbcDriver");
-					//連結 ODBC 設定
-					//String URL = "jdbc:odbc:Driver={Microthreadsoft Access Driver (*.mdb, *.accdb)};DBQ="+fileName;
-					//System.out.println(URL);
-					//Con = DriverManager.getConnection(URL,"","");
-					//ST = Con.createStatement();
-					// 其後由此 Statement 物件執行 SQL 指令時，回傳的會是可捲動且唯讀的 ResultSet 物件
-					//SQLStatement = Con.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE,ResultSet.CONCUR_READ_ONLY );
-					//String query = "Select * From Manage_Host";
-					//RS = ST.executeQuery(query);
+			        Class.forName("com.microsoft.sqlserver.jdbc.SQLServerDriver");
+			        Connection conn = DriverManager.getConnection("jdbc:sqlserver://localhost;"+ "databaseName=ManagerDB;user=sa;password=!QAZ2wsx;");
+			        DatabaseMetaData metadata = conn.getMetaData();           
+			        //System.out.println("Database Name: "+ metadata.getDatabaseProductName());
+			        System.out.println("Connect MS DB");
+			        Statement Statement = conn.createStatement();
+			        String query = "SELECT * FROM [ManagerDB].[dbo].[Host_Service_Type]";
+			        ResultSet ResultSet = Statement.executeQuery(query);
+			        
+			        while (ResultSet.next()) {
+			            System.out.println(ResultSet.getString(1) + ", " + ResultSet.getString(2) + ", "
+			                + ResultSet.getString(3));
+			        }
 				}catch(Exception x) {
-					System.out.println("MS AccessDB Connet Error....");
+					System.out.println("MS DB Connet Error....");
 				}
 				
 			}
-		});
-		
-		
-		
+		});	
 		ShowButton.setFont(new Font("微軟正黑體", Font.BOLD, 14));
+		
+		//Monitor_button
+		Monitor_button = new JButton("Monitor GO");
+		Monitor_button.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {				
+					if(Monitor_button.isSelected()) {
+						Monitor_button.setText("Monitor On");
+						Monitor_button.setSelected(false);
+						//Monitor_Button.setBackground(Color.green);
+						Image img = new ImageIcon(this.getClass().getResource("/switch-on.png")).getImage();
+						//Switch.setIcon(new ImageIcon(img));	
+						//Monitor_Area.append("On\n");	
+						Monitor_Button_ActionPerformedS(e);
+					}
+					else {
+						Monitor_button.setText("Monitor Off");
+						Monitor_button.setSelected(true);
+						//Monitor_Button.setBackground(Color.red);
+						Image img = new ImageIcon(this.getClass().getResource("/switch-off.png")).getImage();
+						//Switch.setIcon(new ImageIcon(img));
+						Monitor_Button_ActionPerformedC(e);
+					}
+			}
+		});
+		Monitor_button.setFont(new Font("微軟正黑體", Font.BOLD, 13));
+		
+		JScrollPane scrollPane_2 = new JScrollPane();
+		
+		//------------------------------------------------------------------------------------------------------
 		GroupLayout gl_Manager = new GroupLayout(Manager);
 		gl_Manager.setHorizontalGroup(
 			gl_Manager.createParallelGroup(Alignment.LEADING)
-				.addGroup(gl_Manager.createSequentialGroup()
+				.addGroup(Alignment.TRAILING, gl_Manager.createSequentialGroup()
 					.addContainerGap()
-					.addGroup(gl_Manager.createParallelGroup(Alignment.LEADING)
-						.addComponent(ShowButton, GroupLayout.PREFERRED_SIZE, 135, GroupLayout.PREFERRED_SIZE)
-						.addComponent(scrollPane_1, GroupLayout.DEFAULT_SIZE, 674, Short.MAX_VALUE))
+					.addGroup(gl_Manager.createParallelGroup(Alignment.TRAILING)
+						.addComponent(scrollPane_2, Alignment.LEADING, GroupLayout.DEFAULT_SIZE, 674, Short.MAX_VALUE)
+						.addComponent(scrollPane_1, Alignment.LEADING, GroupLayout.DEFAULT_SIZE, 674, Short.MAX_VALUE)
+						.addGroup(Alignment.LEADING, gl_Manager.createSequentialGroup()
+							.addComponent(ShowButton, GroupLayout.PREFERRED_SIZE, 135, GroupLayout.PREFERRED_SIZE)
+							.addPreferredGap(ComponentPlacement.RELATED, 414, Short.MAX_VALUE)
+							.addComponent(Monitor_button, GroupLayout.PREFERRED_SIZE, 125, GroupLayout.PREFERRED_SIZE)))
 					.addContainerGap())
 		);
 		gl_Manager.setVerticalGroup(
@@ -143,99 +176,32 @@ public class Manager {
 				.addGroup(gl_Manager.createSequentialGroup()
 					.addContainerGap()
 					.addComponent(scrollPane_1, GroupLayout.PREFERRED_SIZE, 288, GroupLayout.PREFERRED_SIZE)
-					.addGap(18)
-					.addComponent(ShowButton)
-					.addContainerGap(183, Short.MAX_VALUE))
+					.addPreferredGap(ComponentPlacement.RELATED)
+					.addGroup(gl_Manager.createParallelGroup(Alignment.BASELINE)
+						.addComponent(ShowButton)
+						.addComponent(Monitor_button, GroupLayout.PREFERRED_SIZE, 27, GroupLayout.PREFERRED_SIZE))
+					.addPreferredGap(ComponentPlacement.UNRELATED)
+					.addComponent(scrollPane_2, GroupLayout.DEFAULT_SIZE, 175, Short.MAX_VALUE)
+					.addContainerGap())
 		);
+		//------------------------------------------------------------------------------------------------------
+		//Monitor_Area
+		Monitor_Area = new JTextArea("Monitor\u8A0A\u606F:\n", 5, 5);
+		Monitor_Area.setLineWrap(true);
+		Monitor_Area.setFont(new Font("微軟正黑體", Font.BOLD, 13));
+		scrollPane_2.setViewportView(Monitor_Area);
 		
+		//Manage_table
 		Manage_table = new JTable();
 		Manage_table.setFont(new Font("微軟正黑體", Font.BOLD, 13));
 		scrollPane_1.setViewportView(Manage_table);
 		Manager.setLayout(gl_Manager);
-		
-		JPanel Monitor = new JPanel();
-		tabbedPane.addTab("Monitor", null, Monitor, null);
-		Monitor.setBounds(100, 100, 725, 611);
-		
-		//Switch on off
-		JLabel Switch = new JLabel();
-		
-		//Monitor_Button
-		Monitor_Button = new JButton("Monitor GO");
-		Monitor_Button.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-	
-				if(Monitor_Button.isSelected()) {
-					Monitor_Button.setText("Monitor On");
-					Monitor_Button.setSelected(false);
-					//Monitor_Button.setBackground(Color.green);
-					Image img = new ImageIcon(this.getClass().getResource("/switch-on.png")).getImage();
-					Switch.setIcon(new ImageIcon(img));	
-					//Monitor_Area.append("On\n");	
-					Monitor_Button_ActionPerformedS(e);
-				}
-				else {
-					Monitor_Button.setText("Monitor Off");
-					Monitor_Button.setSelected(true);
-					//Monitor_Button.setBackground(Color.red);
-					Image img = new ImageIcon(this.getClass().getResource("/switch-off.png")).getImage();
-					Switch.setIcon(new ImageIcon(img));
-					Monitor_Button_ActionPerformedC(e);
-				}
-			}
-		});
-		Monitor_Button.setFont(new Font("微軟正黑體", Font.BOLD, 13));
-		
-		JLabel lblNewLabel = new JLabel("Monitor Token");
-		lblNewLabel.setFont(new Font("微軟正黑體", Font.BOLD, 14));
-		
-		JScrollPane scrollPane = new JScrollPane();
-		
-
-		//------------------------------------------------------------------------------------------------------
-		GroupLayout gl_Monitor = new GroupLayout(Monitor);
-		gl_Monitor.setHorizontalGroup(
-			gl_Monitor.createParallelGroup(Alignment.LEADING)
-				.addGroup(gl_Monitor.createSequentialGroup()
-					.addContainerGap()
-					.addGroup(gl_Monitor.createParallelGroup(Alignment.LEADING)
-						.addComponent(lblNewLabel, GroupLayout.PREFERRED_SIZE, 142, GroupLayout.PREFERRED_SIZE)
-						.addComponent(scrollPane, GroupLayout.PREFERRED_SIZE, 484, GroupLayout.PREFERRED_SIZE))
-					.addPreferredGap(ComponentPlacement.RELATED)
-					.addGroup(gl_Monitor.createParallelGroup(Alignment.LEADING)
-						.addGroup(gl_Monitor.createSequentialGroup()
-							.addGap(56)
-							.addComponent(Switch, GroupLayout.PREFERRED_SIZE, 70, GroupLayout.PREFERRED_SIZE))
-						.addComponent(Monitor_Button, GroupLayout.DEFAULT_SIZE, 184, Short.MAX_VALUE))
-					.addContainerGap())
-		);
-		gl_Monitor.setVerticalGroup(
-			gl_Monitor.createParallelGroup(Alignment.LEADING)
-				.addGroup(gl_Monitor.createSequentialGroup()
-					.addContainerGap(13, Short.MAX_VALUE)
-					.addGroup(gl_Monitor.createParallelGroup(Alignment.LEADING)
-						.addComponent(Switch, GroupLayout.PREFERRED_SIZE, 31, GroupLayout.PREFERRED_SIZE)
-						.addComponent(lblNewLabel))
-					.addPreferredGap(ComponentPlacement.RELATED)
-					.addGroup(gl_Monitor.createParallelGroup(Alignment.LEADING)
-						.addComponent(Monitor_Button)
-						.addComponent(scrollPane, GroupLayout.PREFERRED_SIZE, 468, GroupLayout.PREFERRED_SIZE))
-					.addContainerGap(GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-		);
-		//------------------------------------------------------------------------------------------------------
-		Monitor_Area = new JTextArea("Monitor訊息:\n",5,5);
-		Monitor_Area.setLineWrap(true);//自動換行
-		scrollPane.setViewportView(Monitor_Area);
-		Monitor_Area.setLineWrap(true);//自動換行
-		Monitor_Area.setFont(new Font("微軟正黑體", Font.BOLD, 13));
-		Monitor_Area.setBounds(10,10,200,60);
-		Monitor_Area.setBounds(10,10,200,60);
-		Monitor.setLayout(gl_Monitor);
 		//Monitor_Area.append(Monitor_Button.getText());
 		frmTt.getContentPane().setLayout(groupLayout);
 		
 		}
 	
+	//Socket 連線 Thread
     private void Monitor_Button_ActionPerformedS(ActionEvent evt) {//GEN-FIRST:event_Monitor_Button_ActionPerformed
         Thread starter = new Thread(new ServerStart());
         starter.start();     
@@ -243,6 +209,7 @@ public class Manager {
         starter.interrupt();
     }//GEN-LAST:event_Monitor_Button_ActionPerforme
     
+    //Socket 關閉連線 Thread
     private void Monitor_Button_ActionPerformedC(ActionEvent evt) {//GEN-FIRST:event_Monitor_Button_ActionPerformed
         Thread closer = new Thread(new ServerColse());
         closer.start(); 
@@ -250,11 +217,14 @@ public class Manager {
         Monitor_Area.append("Monitor已關閉!!!\n");
 
     }//GEN-LAST:event_Monitor_Button_ActionPerforme
+    
 
 	private void add(JTextArea monitor_Area) {
 		// TODO Auto-generated method stub
 		
 	}
+	
+	
 	
 
 	/**
@@ -289,7 +259,7 @@ public class Manager {
 
         			
         			loop:  		
-        			while (!Monitor_Button.isSelected()) {
+        			while (!Monitor_button.isSelected()) {
         				Monitor_Area.append("Moniotr is listenning....\n");
         				Socket S1 = Server.accept();
         				System.out.println("Client is connected , IP:"+S1.getInetAddress());
