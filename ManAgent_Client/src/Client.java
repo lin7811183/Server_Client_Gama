@@ -7,12 +7,12 @@ public class Client {
 	
 	public static void main(String args[]) throws IOException, InterruptedException	{
 		
-		Client.ClientSock();
+
 		//Client.ServiceCheck();
-		//for(;;) {
-		//Client.ClientSock();
-		//TimeUnit.SECONDS.sleep(1);
-		//}
+		for(;;) {
+		Client.ClientSock();
+		TimeUnit.SECONDS.sleep(1);
+		}
 	}
 	
 	//Client Socket ³s½u
