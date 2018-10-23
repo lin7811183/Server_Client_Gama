@@ -21,6 +21,7 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.SocketAddress;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.awt.event.ActionEvent;
@@ -54,7 +55,8 @@ public class Manager {
     private JTable Manage_table;
     private JTextArea Monitor_Area;
     private JButton Monitor_button;
-    
+    private JButton ShowButton;
+    private ResultSet ResultSet;
 
     
 	/**
@@ -103,28 +105,16 @@ public class Manager {
 		JScrollPane scrollPane_1 = new JScrollPane();
 		
 		//Show Table Button
-		JButton ShowButton = new JButton("Show All Host");
+		ShowButton = new JButton("Show All Host");
 		ShowButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
+				MSGameWorldList();
 				try {
-					//載入JDBC Driver 
-			        Class.forName("com.microsoft.sqlserver.jdbc.SQLServerDriver");
-			        Connection conn = DriverManager.getConnection("jdbc:sqlserver://localhost;"+ "databaseName=ManagerDB;user=sa;password=!QAZ2wsx;");
-			        DatabaseMetaData metadata = conn.getMetaData();           
-			        //System.out.println("Database Name: "+ metadata.getDatabaseProductName());
-			        System.out.println("Connect MS DB");
-			        Statement Statement = conn.createStatement();
-			        String query = "SELECT * FROM [ManagerDB].[dbo].[Host_Service_Type]";
-			        ResultSet ResultSet = Statement.executeQuery(query);
-			        
-			        while (ResultSet.next()) {
-			            System.out.println(ResultSet.getString(1) + ", " + ResultSet.getString(2) + ", "
-			                + ResultSet.getString(3));
-			        }
-				}catch(Exception x) {
-					System.out.println("MS DB Connet Error....");
-				}
-				
+					Show_GameWorld();
+				} catch (SQLException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}		
 			}
 		});	
 		ShowButton.setFont(new Font("微軟正黑體", Font.BOLD, 14));
@@ -199,8 +189,53 @@ public class Manager {
 		//Monitor_Area.append(Monitor_Button.getText());
 		frmTt.getContentPane().setLayout(groupLayout);
 		
+
+
 		}
 	
+	//GameWorldList
+	public ArrayList<GameWorldList> MSGameWorldList(){
+		ArrayList<GameWorldList> GameWorldList = new ArrayList<>();
+		try {
+			//載入JDBC Driver 
+	        Class.forName("com.microsoft.sqlserver.jdbc.SQLServerDriver");
+	        Connection conn = DriverManager.getConnection("jdbc:sqlserver://localhost;"+ "databaseName=ManagerDB;user=sa;password=!QAZ2wsx;");
+	        DatabaseMetaData metadata = conn.getMetaData();           
+	        //System.out.println("Database Name: "+ metadata.getDatabaseProductName());
+	        System.out.println("Connect MS DB");
+	        Statement Statement = conn.createStatement();
+	        String query = "SELECT * FROM [ManagerDB].[dbo].[Host_Service_Type]";
+	        ResultSet = Statement.executeQuery(query);
+	        GameWorldList List;
+	        while (ResultSet.next()) {
+	        	List = new GameWorldList(ResultSet.getString("Host_Name"),ResultSet.getString("Host_Service"),ResultSet.getString("Service_Type"));
+	        	GameWorldList.add(List);
+	            System.out.println(ResultSet.getString(1) + ", " + ResultSet.getString(2) + ", " + ResultSet.getString(3));
+	        }
+	        
+		}catch(Exception x) {
+			System.out.println("MS DB Connet Error....");
+		}
+		return GameWorldList;
+	}
+	
+	//
+	//Show Game World List
+	public void Show_GameWorld() throws SQLException {
+			ArrayList<GameWorldList> GameWorldList = new ArrayList<>();
+			DefaultTableModel Model = (DefaultTableModel)Manage_table.getModel();
+			Object[] row = new Object[4];
+
+				row[0] = ResultSet.getString(1);
+				row[1] = ResultSet.getString(2);
+				row[2] = ResultSet.getString(3);
+				row[3] = ResultSet.getString(3);
+				Model.addRow(row);
+
+
+		
+	}
+
 	//Socket 連線 Thread
     private void Monitor_Button_ActionPerformedS(ActionEvent evt) {//GEN-FIRST:event_Monitor_Button_ActionPerformed
         Thread starter = new Thread(new ServerStart());
